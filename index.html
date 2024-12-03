@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Mini Ecommerce</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script defer src="https://use.fontawesome.com/releases/v5.8.1/js/all.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            background-color: #007bff;
+            color: white;
+        }
+        .navbar-brand, .navbar a, .navbar button {
+            color: white !important;
+        }
+        .card {
+            border: 1px solid #007bff;
+        }
+        .card-title {
+            color: #007bff;
+        }
+        .add-to-cart {
+            background-color: #28a745;
+            border: none;
+            color: white;
+        }
+        .add-to-cart:hover {
+            background-color: #218838;
+        }
+        .remove-from-cart {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+        }
+        .remove-from-cart:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar navbar-expand-lg">
+            <a class="navbar-brand">Mini Ecommerce</a>
+            <form class="form-inline ml-auto">
+                <input class="form-control mr-sm-2" type="search" placeholder="Search" id="keyword" aria-label="Search">
+                <button class="btn btn-success my-2 my-sm-0" type="button" id="searchItem">Search</button>
+            </form>
+            <button class="btn btn-warning ml-2" id="cart"><i class="fas fa-shopping-cart"></i> (0)</button>
+        </nav>
+        <div class="row mt-3" id="listBarang"></div>
+        <div class="mt-4">
+            <h4>Keranjang</h4>
+            <ul class="list-group" id="cartItems"></ul>
+        </div>
+    </div>
+
+    <script>
+        const items = [
+            ['001', 'Keyboard Logitek', 60000, 'Keyboard yang mantap untuk kantoran', 'logitek.jpg'], 
+            ['002', 'Keyboard MSI', 300000, 'Keyboard gaming MSI mekanik', 'msi.jpg'],
+            ['003', 'Mouse Genius', 50000, 'Mouse Genius biar lebih pinter', 'genius.jpeg'],
+            ['004', 'Mouse Jerry', 30000, 'Mouse yang disukai kucing', 'jerry.jpg']
+        ];
+
+        const listBarang = document.getElementById('listBarang');
+        const cartItems = document.getElementById('cartItems');
+        const keywordInput = document.getElementById('keyword');
+        const searchButton = document.getElementById('searchItem');
+        const cartButton = document.getElementById('cart');
+        let cart = [];
+
+   
+        const renderItems = (filter = '') => {
+            listBarang.innerHTML = '';
+            const filteredItems = items.filter(item => item[1].toLowerCase().includes(filter.toLowerCase()));
+            filteredItems.forEach(item => {
+                const card = document.createElement('div');
+                card.classList.add('col-4', 'mt-2');
+                card.innerHTML = `
+                    <div class="card" style="width: 18rem;">
+                        <img src="${item[4]}" class="card-img-top" height="200px" alt="${item[1]}">
+                        <div class="card-body">
+                            <h5 class="card-title">${item[1]}</h5>
+                            <p class="card-text">${item[3]}</p>
+                            <p class="card-text">Rp ${item[2].toLocaleString('id-ID')}</p>
+                            <button class="btn add-to-cart" data-id="${item[0]}">Tambahkan ke keranjang</button>
+                        </div>
+                    </div>
+                `;
+                listBarang.appendChild(card);
+            });
+        };
+
+
+        const updateCart = () => {
+            cartItems.innerHTML = '';
+            cart.forEach(item => {
+                const li = document.createElement('li');
+                li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
+                li.innerHTML = `
+                    ${item[1]} - Rp ${item[2].toLocaleString('id-ID')}
+                    <button class="btn remove-from-cart" data-id="${item[0]}">Hapus</button>
+                `;
+                cartItems.appendChild(li);
+            });
+            cartButton.innerHTML = `<i class="fas fa-shopping-cart"></i> (${cart.length})`;
+        };
+
+
+        listBarang.addEventListener('click', (e) => {
+            if (e.target.classList.contains('add-to-cart')) {
+                const id = e.target.getAttribute('data-id');
+                const item = items.find(i => i[0] === id);
+                if (!cart.find(i => i[0] === id)) {
+                    cart.push(item);
+                }
+                updateCart();
+            }
+        });
+
+  
+        cartItems.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-from-cart')) {
+                const id = e.target.getAttribute('data-id');
+                cart = cart.filter(item => item[0] !== id);
+                updateCart();
+            }
+        });
+
+   
+        searchButton.addEventListener('click', () => {
+            const keyword = keywordInput.value;
+            renderItems(keyword);
+        });
+
+   
+        renderItems();
+    </script>
+</body>
+</html>
